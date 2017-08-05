@@ -75,7 +75,7 @@ c4 = {}
 --  similar offsets, and not worry about messing with the clock on the camera.  (This may not have
 --  been the best choice on my part!  :) )
 TestBeepNoShutter = 1
-
+RunOnPC = 1
 
 --
 -- Set the 4 contact times here.  Time zone is irrelevant, as long as your camera and these
@@ -83,14 +83,13 @@ TestBeepNoShutter = 1
 -- is accurately set to GPS time.
 --
 if (TestBeepNoShutter == 1)
-then
-    -- Use offset
+then -- offsets from now
     c1.hr  = 0
-    c1.min = 1
+    c1.min = 0
     c1.sec = 0
 
     c2.hr  = 0
-    c2.min = 2
+    c2.min = 1
     c2.sec = 0
 
     c3.hr  = 0
@@ -100,25 +99,23 @@ then
     c4.hr  = 0
     c4.min = 4
     c4.sec = 0
-else
-    -- Use actual time as per camera timezone
-    c1.hr  = 16
-    c1.min = 2
-    c1.sec = 0
+else -- actual time
+    c1.hr  = 0
+    c1.min = 0
+    c1.sec = 10
 
-    c2.hr  = 17
-    c2.min = 3
+    c2.hr  = 0
+    c2.min = 1
     c2.sec = 0
 
-    c3.hr  = 17
-    c3.min = 4
+    c3.hr  = 0
+    c3.min = 3
     c3.sec = 0
 
-    c4.hr  = 17
-    c4.min = 5
+    c4.hr  = 0
+    c4.min = 2
     c4.sec = 0
 end
-
 --
 -- Set an aperture value.  The script assumes that the aperture stays constant throughout the
 -- eclipe.  The camera will (try to) set this aperture (f-number) at the beginning of the script.
@@ -227,7 +224,7 @@ TotalityExpStep         = 1
 -- the moon, as much as possible.  Exposures here are kind of guesswork, and I have actually turned this
 -- off by default.
 --
-DoMaxExposures = 0     -- Number of (possibly bracketed) exposures to take at max-eclipse.
+DoMaxExposures = 1     -- Number of (possibly bracketed) exposures to take at max-eclipse.
 MaxOffset      = (7/2) -- How long before max eclipse to start these exposures.  You'll have to test
                        -- or use math to determine this value.  (Value is in seconds.)
 NumMaxExposures = 1
@@ -262,12 +259,60 @@ MaxOffset = MaxOffset * DoMaxExposures -- This is ugly, and shouldn't be here.
 tick_offset   = 0
 TestStartTime = 0
 
+if (RunOnPC == 1)
+then
+    clock_rate = os.clock()
+    start = os.time()
+    while (os.time() < start + 5) do
+    end
+    clock_rate = (os.clock() - clock_rate)/5000.0
+    menu = {}
+    function menu.close()
+    end
+    console = {}
+    function console.show()
+    end
+    function console.hide()
+    end
+    event = {}
+    task = {}
+    camera = {}
+    function camera.burst()
+    end
+    MODE = {}
+    MODE.M = 1
+    camera.mode = MODE.M
+    camera.iso = {}
+    camera.iso.value = 100
+    camera.shutter = {}
+    camera.shutter.value = 1
+    camera.shutter.ms = 1
+    camera.aperture = {}
+    lv = {}
+    function msleep(val)
+        local end_val = os.clock() + clock_rate*val
+        while (os.clock() < end_val) do
+        end
+    end
+    function beep()
+    end
+    function task.yield(val)
+        msleep(val)
+    end
+end
+
 
 --
 -- Get the current time (in seconds) from the camera's clock.
 --
 function get_cur_secs ()
-    local cur_time = dryos.date
+    local cur_time
+    if (RunOnPC == 1)
+    then
+        cur_time = os.date("*t")
+    else
+        cur_time = dryos.date
+    end
     local cur_secs = (cur_time.hour * 3600 + cur_time.min * 60 + cur_time.sec)
     if ( TestBeepNoShutter == 1 )
     then
@@ -363,7 +408,12 @@ function wait_until (done_waiting)
     --  (done_waiting + 1) to exit.
     if ( counter < done_waiting)
     then
-        next_sec = (1000 - ((dryos.ms_clock - tick_offset) % 1000))
+        if (RunOnPC == 1)
+        then
+            next_sec = 1000
+        else
+            next_sec = (1000 - ((dryos.ms_clock - tick_offset) % 1000))
+        end
         msleep (next_sec) -- Hard sleep, don't let anything else have priority.
     end
 end
@@ -640,7 +690,6 @@ function do_maxc3()
     do_beep()
 
 end
-
 
 --
 -- The ringleader.
