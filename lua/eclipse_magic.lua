@@ -15,19 +15,19 @@
 --
 -- **NOTE** At the current time, the "camera.burst()" functionality requires the "lua_fix"
 -- beta build of Magic Lantern which can be found at https://builds.magiclantern.fm/experiments.html.
--- Hopefully this function will be merged into the mainline soon.  
+-- Hopefully this function will be merged into the mainline soon.
 --
 -- ***************************************************************************************************
 -- ***************************************************************************************************
 --
 --
 -- Read through the comments at the top of the script, and modify the contact points to suit
--- your location, and the exposure settings to suit your camera.  Copy the script to 
+-- your location, and the exposure settings to suit your camera.  Copy the script to
 -- the ML/SCRIPTS directory on your camera's media, and run it from the menu.
 --
--- If you have issues, (and you aren't running with the test flag set) you should be able to 
--- reboot your camera, and it will pick up where it left off.  Exposure events are tied to 
--- particular times, not a sequence that needs to start at a specific time.  This is useful if 
+-- If you have issues, (and you aren't running with the test flag set) you should be able to
+-- reboot your camera, and it will pick up where it left off.  Exposure events are tied to
+-- particular times, not a sequence that needs to start at a specific time.  This is useful if
 -- (for example) you need to change batteries in mid-eclipse.
 --
 -- See http://xjubier.free.fr/en/site_pages/SolarEclipseExposure.html for suggestions for
@@ -41,6 +41,9 @@
 -- ***************************************************************************************************
 -- ***************************************************************************************************
 
+-- Modified by Chaitanya Ghone, csghone@gmail.com
+-- 1. Whitespace cleaned-up
+-- 2. Added a few functions
 
 -- Variable definitons that have to go here.  Ignore them.
 c1 = {}
@@ -65,7 +68,7 @@ c4 = {}
 --  If TestBeepNoShutter is set to 1, then the script will start demonstrating eclipse exposures
 --  in ten hours and thirty minutes.
 --
---  If TestBeepNoShutter is set to 0, the script will start taking actual exposures in two 
+--  If TestBeepNoShutter is set to 0, the script will start taking actual exposures in two
 --  hours and thirty minutes (ie: at 10:30:00).
 --
 --  The intent was that (for testing) you could set C1 to 00:00:30 or so, and the other contacts to
@@ -79,21 +82,42 @@ TestBeepNoShutter = 1
 -- times are the same.  Make sure the times are correct for your location, and that your camera
 -- is accurately set to GPS time.
 --
-c1.hr = 0
-c1.min = 1
-c1.sec = 0
+if (TestBeepNoShutter == 1)
+then
+    -- Use offset
+    c1.hr  = 0
+    c1.min = 1
+    c1.sec = 0
 
-c2.hr = 0
-c2.min = 11
-c2.sec = 0
+    c2.hr  = 0
+    c2.min = 2
+    c2.sec = 0
 
-c3.hr = 0
-c3.min = 13
-c3.sec = 30
+    c3.hr  = 0
+    c3.min = 3
+    c3.sec = 0
 
-c4.hr = 0
-c4.min = 23
-c4.sec = 30
+    c4.hr  = 0
+    c4.min = 4
+    c4.sec = 0
+else
+    -- Use actual time as per camera timezone
+    c1.hr  = 16
+    c1.min = 2
+    c1.sec = 0
+
+    c2.hr  = 17
+    c2.min = 3
+    c2.sec = 0
+
+    c3.hr  = 17
+    c3.min = 4
+    c3.sec = 0
+
+    c4.hr  = 17
+    c4.min = 5
+    c4.sec = 0
+end
 
 --
 -- Set an aperture value.  The script assumes that the aperture stays constant throughout the
@@ -102,13 +126,13 @@ c4.sec = 30
 -- If the script and camera are being used with a fixed aperture lens (or telescope), then
 -- set the "SetAperture" to 0.
 SetAperture = 1
-Aperture = 5.0
+Aperture    = 5.0
 
 --
 -- If you shoot with LiveView active, you will reduce the amount of mirror slap, giving
--- less vibration.  But.  Some cameras (Such as the 5DmkII.) have a limited range of shutter 
--- speed when LV and Movie mode are enabled.  This reduces the available speeds from 30 seconds 
--- through 1/8000th of a second to 1/30th to 1/4000th of a second.  Exceeding that range while 
+-- less vibration.  But.  Some cameras (Such as the 5DmkII.) have a limited range of shutter
+-- speed when LV and Movie mode are enabled.  This reduces the available speeds from 30 seconds
+-- through 1/8000th of a second to 1/30th to 1/4000th of a second.  Exceeding that range while
 -- LV and Movie mode are enabled will crash the script.
 --
 -- Setting this variable to 1 will, before taking any images, check if LV is running, and if it
@@ -131,69 +155,69 @@ WarnLiveView = 0
 -- script will start with the console displayed, and you will have to manage it through the Magic
 -- Lantern menu.  If you turn it off, it stays off until you turn it on again.
 --
-HideConsole = 1
+HideConsole      = 1
 ConsoleShowDelay = 30
 
 
 --
--- Even if you shoot with Live View with Silent Mode 1 (which forces the mirror to be 
--- locked up, and eliminates the vibration from the shutter opening) there will be slight 
+-- Even if you shoot with Live View with Silent Mode 1 (which forces the mirror to be
+-- locked up, and eliminates the vibration from the shutter opening) there will be slight
 -- vibrations introduced as the shutter closes.  According to Jerry Lodriguss at
 -- http://www.astropix.com/wp/2017/07/17/mirror-slap-and-shutter-shock/ these vibrations
--- are most prominent between 0.125s and 2s, and can be somewhat mitigated by a slight 
+-- are most prominent between 0.125s and 2s, and can be somewhat mitigated by a slight
 -- delay before exposure, to allow the vibration to dampen a bit.
 --
--- Enabling this option lets you set a range of shutter speeds to delay before, and 
+-- Enabling this option lets you set a range of shutter speeds to delay before, and
 -- how long (in milliseconds) to pause.
 --
-DoShutterShockDelay = 1
+DoShutterShockDelay   = 1
 SlowestDelayedShutter = 2
 FastestDelayedShutter = (1/8)
-ShutterShockDelayMS = 300		-- Value is in milliseconds!
+ShutterShockDelayMS   = 300        -- Value is in milliseconds!
 
 
 --
--- Partial phase settings. 
+-- Partial phase settings.
 --
-PartialISO = 100
-PartialShutterSpeed = (1/2000)
-PartialMarginTime = 15			-- Number of seconds after C1 or C3 and before C2 or C4 to start exposures
-PartialExposureCount = 4		-- Number of partial phase exposures before and after totality
-PartialDoBkt = 1				-- Do you want to do exposure bracketing?  1 - yes, 0 - no
-PartialBktStep = 1				-- Number of f-stops in each step.  Can 0.333333, 1, 2, etc
-PartialBktCount = 1				-- How many brackets on each side of the neutral exposure?
+PartialISO           = 100
+PartialShutterSpeed  = (1/2000)
+PartialMarginTime    = 15 -- Number of seconds after C1 or C3 and before C2 or C4 to start exposures
+PartialExposureCount = 4  -- Number of partial phase exposures before and after totality
+PartialDoBkt         = 1  -- Do you want to do exposure bracketing?  1 - yes, 0 - no
+PartialBktStep       = 1  -- Number of f-stops in each step.  Can 0.333333, 1, 2, etc
+PartialBktCount      = 1  -- How many brackets on each side of the neutral exposure?
 
 
 --
 -- Do a fast burst of exposures at C2 and C3, to try to get Baily's beads and chromosphere.
 -- You will need to know how many exposures your camera will buffer, and how long it takes the
 -- buffer to fill.  At "StartOffset" seconds before C2 or C3, the camera will take "BurstCount"
--- exposures, as fast as it can.  You should adjust C23StartOffset so that burst of image straddles 
+-- exposures, as fast as it can.  You should adjust C23StartOffset so that burst of image straddles
 -- the contact time.  Note that, between the setting of the camera clock and the jitter in this
 -- script, there will be some error in the timing.  +/- half a second or more is possible.
 --
-C23BurstCount = 14			-- Note that most Canon DSLRs can't take more than 13-14 RAW images
-								-- in a burst before the buffer is full, and they slow to ~1 image/second.
-C2BurstStartOffset = 3
-C3BurstStartOffset = 2
-C23BurstISO = 100
+C23BurstCount        = 14 -- Note that most Canon DSLRs can't take more than 13-14 RAW images
+                          -- in a burst before the buffer is full, and they slow to ~1 image/second.
+C2BurstStartOffset   = 3
+C3BurstStartOffset   = 2
+C23BurstISO          = 100
 C23BurstShutterSpeed = (1/500)
 
 
 --
--- During the time between C2 and C3, the script will run back and forth between the 
+-- During the time between C2 and C3, the script will run back and forth between the
 -- "MinShutterSpeed" and "MaxShutterSpeed" as quickly as possible, with an extra 2 long exposures
 -- at midpoint.  "ExpStep" is the size of the f-stop variation, and can be set to 0.333333, 1, 2, etc.
 -- Min, Max and PrefISO:  Totality exposures will run (where possible) at PrefISO.  However, there
 -- will also be exposures at MinShutterSpeed from MinISO to PrefISO, and MaxShutterSpeed from
 -- PrefISO to MaxISO.
 --
-TotalityMinISO = 100 
-TotalityMaxISO = 1600
-TotalityPrefISO = 400
+TotalityMinISO          = 100
+TotalityMaxISO          = 1600
+TotalityPrefISO         = 400
 TotalityMinShutterSpeed = (1/8000) -- (MinShutterSpeed is the *fastest* speed to use.)
-TotalityMaxShutterSpeed = 1.0 -- 1 sec (MaxShutterSpeed is the *slowest*, longest speed used.)
-TotalityExpStep = 1
+TotalityMaxShutterSpeed = 1.0      -- 1 sec (MaxShutterSpeed is the *slowest*, longest speed used.)
+TotalityExpStep         = 1
 
 --
 -- One of the more difficult exposures to capture is earthshine -- the surface of the moon,
@@ -203,14 +227,14 @@ TotalityExpStep = 1
 -- the moon, as much as possible.  Exposures here are kind of guesswork, and I have actually turned this
 -- off by default.
 --
-DoMaxExposures = 0		-- Number of (possibly bracketed) exposures to take at max-eclipse.
-MaxOffset = (7/2) 		-- How long before max eclipse to start these exposures.  You'll have to test
-						-- or use math to determine this value.  (Value is in seconds.)
+DoMaxExposures = 0     -- Number of (possibly bracketed) exposures to take at max-eclipse.
+MaxOffset      = (7/2) -- How long before max eclipse to start these exposures.  You'll have to test
+                       -- or use math to determine this value.  (Value is in seconds.)
 NumMaxExposures = 1
-DoMaxBrackets = 1		-- Brackets?
-NumMaxBrackets = 1
-MaxBracketStep = 1
-MaxISO = 3200
+DoMaxBrackets   = 1    -- Brackets?
+NumMaxBrackets  = 1
+MaxBracketStep  = 1
+MaxISO          = 3200
 MaxShutterSpeed = 2.0
 
 
@@ -227,15 +251,15 @@ MaxShutterSpeed = 2.0
 -- Times are easiest to deal with in seconds.  This would be painful if they crossed over midnight,
 -- but late-night solar eclipses are rare.
 --
-c1_sec = c1.hr * 3600 + c1.min * 60 + c1.sec 
-c2_sec = c2.hr * 3600 + c2.min * 60 + c2.sec 
-c3_sec = c3.hr * 3600 + c3.min * 60 + c3.sec 
-c4_sec = c4.hr * 3600 + c4.min * 60 + c4.sec 
+c1_sec = c1.hr * 3600 + c1.min * 60 + c1.sec
+c2_sec = c2.hr * 3600 + c2.min * 60 + c2.sec
+c3_sec = c3.hr * 3600 + c3.min * 60 + c3.sec
+c4_sec = c4.hr * 3600 + c4.min * 60 + c4.sec
 max_sec = c2_sec + ((c3_sec - c2_sec) / 2)
 
 MaxOffset = MaxOffset * DoMaxExposures -- This is ugly, and shouldn't be here.
 
-tick_offset = 0
+tick_offset   = 0
 TestStartTime = 0
 
 
@@ -243,108 +267,119 @@ TestStartTime = 0
 -- Get the current time (in seconds) from the camera's clock.
 --
 function get_cur_secs ()
-
-	local cur_time = dryos.date
-	local cur_secs = (cur_time.hour * 3600 + cur_time.min * 60 + cur_time.sec)
-	
-	if ( TestBeepNoShutter == 1 )
-	then
-	
-		cur_secs = (cur_secs - TestStartTime)		-- If we're testing, start the clock at 
-													-- now, not actual time.
-		
-	end
-	
-	return cur_secs
-
+    local cur_time = dryos.date
+    local cur_secs = (cur_time.hour * 3600 + cur_time.min * 60 + cur_time.sec)
+    if ( TestBeepNoShutter == 1 )
+    then
+        cur_secs = (cur_secs - TestStartTime) -- If we're testing, start the clock at
+                                              -- now, not actual time.
+    end
+    return cur_secs
 end
 
 
 --
--- Take a time variable expressed in seconds (which is what all times are 
+-- Custom shutter-info printer function
+--
+function print_shutter_info(id)
+    print(id, "Time:", pretty_time(get_cur_secs()), "ISO:", camera.iso.value,
+          "shutter: 1/", 1/camera.shutter.value)
+end
+
+--
+-- Take a time variable expressed in seconds (which is what all times are
 -- stored as) and convert it back to HH:MM:SS
 --
 function pretty_time (time_secs)
+    local text_time = ""
+    local hrs = 0
+    local mins = 0
+    local secs = 0
 
-	local text_time = ""
-	local hrs = 0
-	local mins = 0
-	local secs = 0
-	
-	hrs =  math.floor(time_secs / 3600)
+    hrs  = math.floor(time_secs / 3600)
     mins = math.floor((time_secs - (hrs * 3600)) / 60)
-	secs = (time_secs - (hrs*3600) - (mins * 60))
-	
-	text_time = string.format("%02d:%02d:%02d", hrs, mins, secs)
-	
-	return text_time
+    secs = (time_secs - (hrs*3600) - (mins * 60))
 
+    text_time = string.format("%02d:%02d:%02d", hrs, mins, secs)
+
+    return text_time
+end
+
+--
+-- LIVEVIEW WARNING
+--
+function warn_live_view()
+    if ((lv.enabled == true) and (WarnLiveView == 1))
+    then
+        print ("TURN LIVEVIEW OFF (OR DISABLE MOVIE MODE) AND PRESS A BUTTON!!!")
+        do_beep()
+        key.wait()
+    end
 end
 
 
 --
 -- Hurry up and wait for the next important time to arrive.
 --
--- Leave the console displayed for 60 seconds at the start and end of 
+-- Leave the console displayed for 60 seconds at the start and end of
 -- a wait.  Turn it off between, so that tracking can be done via live view, etc.
 --
 function wait_until (done_waiting)
+    local counter = get_cur_secs()
+    local next_sec = 0
+    local show_console = ConsoleShowDelay
+    local console_visible = 1
 
-	local counter = get_cur_secs()
-	local next_sec = 0
-	local show_console = ConsoleShowDelay
-	local console_visible = 1
-	
-	console.show()
-	
-	print ("Waiting for", pretty_time(done_waiting), "in", string.gsub(string.format("%7d",(done_waiting - counter)), " ", ""), "seconds.")
-	
-	repeat
+    console.show()
+    print ("Current time", pretty_time(counter))
+    print ("Waiting for", pretty_time(done_waiting), "in",
+           string.gsub(string.format("%7d",(done_waiting - counter)), " ", ""), "seconds.")
 
-		task.yield (1000) -- Let the camera do other tasks for a second.
-		
-		if ((HideConsole == 1) and (show_console > 0))
-		then
-			
-			show_console = show_console -1
-			
-		elseif ((HideConsole == 1) and (show_console == 0))
-		then
-		
-			console.hide()
-			
-			show_console = -1
-			
-			console_visible = 0
-			
-		end
-		
-		if ((HideConsole == 1) and ((done_waiting - counter) < 30 ) and (console_visible == 0))
-		then
-			
-			console.show()
-			
-			console_visible = 1
-			
-		end
-		
-		counter = get_cur_secs()
-					
-	until (counter >= (done_waiting - 1))
-			
-	if ( counter < done_waiting)	
-	then
-									-- Loop /should/ exit the second before we are done. But
-									--  It's possible that it could exit early in our target
-									--  second. If so, we don't want to wait around to 
-									--  (done_waiting + 1) to exit.
-	
-		next_sec = (1000 - ((dryos.ms_clock - tick_offset) % 1000))
-	
-		msleep (next_sec) -- Hard sleep, don't let anything else have priority.
-		
-	end
-				
+    repeat
+        task.yield (1000) -- Let the camera do other tasks for a second.
+
+        if ((HideConsole == 1) and (show_console > 0))
+        then
+            show_console = show_console -1
+        elseif ((HideConsole == 1) and (show_console == 0))
+        then
+            console.hide()
+            show_console = -1
+            console_visible = 0
+        end
+
+        if ((HideConsole == 1) and ((done_waiting - counter) < 30 ) and (console_visible == 0))
+        then
+            console.show()
+            console_visible = 1
+        end
+
+        counter = get_cur_secs()
+    until (counter >= (done_waiting - 1))
+
+    -- Loop /should/ exit the second before we are done. But
+    --  It's possible that it could exit early in our target
+    --  second. If so, we don't want to wait around to
+    --  (done_waiting + 1) to exit.
+    if ( counter < done_waiting)
+    then
+        next_sec = (1000 - ((dryos.ms_clock - tick_offset) % 1000))
+        msleep (next_sec) -- Hard sleep, don't let anything else have priority.
+    end
+end
+
+--
+-- Shoot if not in test mode
+--
+function shoot_or_beep()
+    if (TestBeepNoShutter == 0)
+    then
+        camera.shoot(false)
+        task.yield(10) -- Exposures can take time.  Give other stuff a chance to run.
+    else
+        beep(1,50)
+        task.yield (600 + camera.shutter.ms)
+    end
 end
 
 
@@ -353,95 +388,45 @@ end
 -- bracketing.
 --
 function take_shot(iso, shutter_speed, dobkt, bktstep, bktcount)
+    local bktspeed = 0.0
 
-	local bktspeed = 0.0
-	
-	if ((lv.enabled == true) and (WarnLiveView == 1))
-	then
-	
-		print ("TURN LIVEVIEW OFF (OR DISABLE MOVIE MODE) AND PRESS A BUTTON!!!")
-		
-		do_beep()
-		
-		key.wait()
-		
-	end
-	
-	camera.iso.value = iso
-	
-	if (dobkt == 0)
-	then	-- Single exposure
+    warn_live_view()
 
-		camera.shutter.value = shutter_speed
-	
-		print ("Click! Time:", pretty_time(get_cur_secs()), "ISO:", camera.iso.value, 
-				"shutter: 1/", 1/camera.shutter.value)
-				
-		if (DoShutterShockDelay == 1)
-		then
-			
-			if ((shutter_speed > FastestDelayedShutter) and (shutter_speed 
-				< SlowestDelayedShutter))
-			then
-				
-				task.yield(ShutterShockDelayMS)
-					
-			end
-				
-		end
-	
-		if (TestBeepNoShutter == 0) 
-		then
-		
-			camera.shoot(false)
-			task.yield(10) -- Exposures can take time.  Give other stuff a chance to run.
-			
-		else
-		
-			beep(1,50)
-			task.yield (600 + camera.shutter.ms)
-			
-		end
-		
-	else	-- Bracketing exposure
-	
-		-- Loop through the requested number of exposure brackets.
-		for bktnum = bktcount,(-1 * bktcount),-1 do
+    camera.iso.value = iso
+    if (dobkt == 0)
+    then    -- Single exposure
+        camera.shutter.value = shutter_speed
+        print_shutter_info("Click!")
 
-			bktspeed = shutter_speed * (2.0^(bktnum * bktstep))
-			
-			camera.shutter.value = bktspeed
-			
-			print ("Click! Time:", pretty_time(get_cur_secs()), "ISO:", camera.iso.value, 
-				"shutter: 1/", 1/camera.shutter.value)
-				
-			if (DoShutterShockDelay == 1)
-			then
-			
-				if ((shutter_speed > FastestDelayedShutter) and (shutter_speed 
-					< SlowestDelayedShutter))
-				then
-				
-					task.yield(ShutterShockDelayMS)
-					
-				end
-				
-			end
-			
-			if (TestBeepNoShutter == 0) then
-		
-				camera.shoot(false)
-				task.yield(10) -- Give other stuff a chance to run
-			
-			else
-		
-				beep(1,50)
-				task.yield ((600 + camera.shutter.ms))
-						
-			end
+        if (DoShutterShockDelay == 1)
+        then
+            if ((shutter_speed > FastestDelayedShutter) and (shutter_speed
+                < SlowestDelayedShutter))
+            then
+                task.yield(ShutterShockDelayMS)
+            end
+        end
 
-		end
-	end
+        shoot_or_beep()
+    else    -- Bracketing exposure
+        -- Loop through the requested number of exposure brackets.
+        for bktnum = bktcount,(-1 * bktcount),-1 do
+            bktspeed             = shutter_speed * (2.0^(bktnum * bktstep))
+            camera.shutter.value = bktspeed
+            print_shutter_info("Click!")
+
+            if (DoShutterShockDelay == 1)
+            then
+                if ((shutter_speed > FastestDelayedShutter) and (shutter_speed
+                    < SlowestDelayedShutter))
+                then
+                    task.yield(ShutterShockDelayMS)
+                end
+            end
+
+            shoot_or_beep()
+        end
+    end
 end
 
 
@@ -453,109 +438,72 @@ end
 -- not something I want to put out.
 --
 function take_burst (count, iso, speed)
+    camera.shutter.value = speed
+    camera.iso.value = iso
 
-	camera.shutter.value = speed
-	camera.iso.value = iso
-	
-	if ((lv.enabled == true) and (WarnLiveView == 1))
-	then
-	
-		print ("TURN LIVEVIEW OFF (OR DISABLE MOVIE MODE) AND PRESS A BUTTON!!!")
-		
-		do_beep()
-		
-		key.wait()
-		
-	end
-	
-	
-	print ("Burst! Time:", pretty_time(get_cur_secs()), "ISO:", camera.iso.value, 
-			"shutter: 1/", 1/camera.shutter.value)
-	
-	if (TestBeepNoShutter == 0)
-	then
-	
-		camera.burst(count)
-		
-		task.yield(10)
-				
-	else
-	
-		beep(3,50)
-		task.yield (4000 + (count * camera.shutter.ms))		
-		
-	end
+    warn_live_view()
 
+    print_shutter_info("Burst!")
+
+    if (TestBeepNoShutter == 0)
+    then
+        camera.burst(count)
+        task.yield(10)
+    else
+        beep(3,50)
+        task.yield (4000 + (count * camera.shutter.ms))
+    end
 end
 
 
--- 
+--
 -- Simple annoying camera beep.
 --
 function do_beep()
-
-		beep (5,100)
-		
-		task.yield (250)
-		
-		beep (5,100)
-		
-		task.yield (250)
-		
-		beep (5,100)
-
+    beep (5,100)
+    task.yield (250)
+    beep (5,100)
+    task.yield (250)
+    beep (5,100)
 end
+
+
 --
 -- Take the spaced exposures for the C1-C2 and C3-C4 periods.  Take the margin times off either
 -- end, split the time into the right intervals, and fire off take_picture()
 --
 function do_partial (start_phase, stop_phase, which_partial)
+    local image_time = 0
+    local image_interval = math.floor((stop_phase - start_phase) / (PartialExposureCount))
+    local exposure_count = 0
 
-	local image_time = 0
-	local image_interval = math.floor((stop_phase - start_phase) / (PartialExposureCount))
-	local exposure_count = 0
-		
-	
-	-- In a series of (PartialCount + 1) images, totality is either
-	--	the first or last image.  This arranges the timing so that there
-	--	will be a equidistance set of ((2 x PartialCount) + 1) exposures,
-	--	with totality properly centered.
-	
-	if (which_partial == "Pre")
-	then
-	
-		image_time = start_phase
-		
-	else
-	
-		image_time = start_phase + image_interval
-		
-	end
-	
-	if ( get_cur_secs() >= stop_phase ) -- Are we past this phase already?
-	then
-	
-		return
-		
-	end
-	
-	repeat
-	
-		if (get_cur_secs() <= image_time)
-		then
-		
-			wait_until(image_time)
-			
-			take_shot (PartialISO, PartialShutterSpeed, PartialDoBkt, PartialBktStep, PartialBktCount)
-			
-		end
-		
-		image_time = image_time + image_interval
-		
-		exposure_count = exposure_count + 1
-	
-	until (exposure_count >= PartialExposureCount)
-	
+    -- In a series of (PartialCount + 1) images, totality is either
+    --    the first or last image.  This arranges the timing so that there
+    --    will be a equidistance set of ((2 x PartialCount) + 1) exposures,
+    --    with totality properly centered.
+
+    if (which_partial == "Pre")
+    then
+        image_time = start_phase
+    else
+        image_time = start_phase + image_interval
+    end
+
+    if ( get_cur_secs() >= stop_phase ) -- Are we past this phase already?
+    then
+        return
+    end
+
+    repeat
+        if (get_cur_secs() <= image_time)
+        then
+            wait_until(image_time)
+            take_shot (PartialISO, PartialShutterSpeed, PartialDoBkt, PartialBktStep, PartialBktCount)
+        end
+        image_time = image_time + image_interval
+        exposure_count = exposure_count + 1
+    until (exposure_count >= PartialExposureCount)
+
 end
 
 
@@ -565,77 +513,56 @@ end
 -- of the eclipse.  <strikethrough>Take two long exposures at that point, for good measure.</strikethrough>
 --
 function do_c2max()
+    local cur_shutter_speed = 0
+    local CurISO = 0
 
-	local cur_shutter_speed = 0
-	local CurISO = 0
-	
-	if ( get_cur_secs() >= max_sec ) -- Are we past this phase already?
-	then
-	
-		return
-		
-	end
-	
-	if ( get_cur_secs() <= (c2_sec - C2BurstStartOffset) ) -- Have we past the burst for Baily's beads?
-	then
-			
-		wait_until (c2_sec - (C2BurstStartOffset + 30))
-		
-		print()
-		print("********************************************************")
-		print("30 seconds to C2!  Remove Filter!")
-		print("********************************************************")
-		print()
-		
-		do_beep()
-	
-		wait_until (c2_sec - C2BurstStartOffset)
-		
-		take_burst (C23BurstCount, C23BurstISO, C23BurstShutterSpeed)
+    if ( get_cur_secs() >= max_sec ) -- Are we past this phase already?
+    then
+        return
+    end
 
-		print()
-		print("********************************************************")
-		print("Post C2 warning!")
-		print("********************************************************")
-		print()		
-		
-		do_beep()
-		
-	end
-	
-	cur_shutter_speed = TotalityMinShutterSpeed
-	
-	CurISO = TotalityMinISO
-	
-	repeat
-	
-		take_shot(CurISO, cur_shutter_speed, 0, 0, 0)
-		
-		if (CurISO < (TotalityPrefISO * 0.95))
-		then
-			
-			CurISO = CurISO * 2.0^TotalityExpStep
-			
-		elseif ((CurISO < (TotalityPrefISO * 1.1)) and (cur_shutter_speed < (TotalityMaxShutterSpeed * 0.95)))
-		then
-		
-			cur_shutter_speed = cur_shutter_speed * 2.0^TotalityExpStep
-		
-		elseif (CurISO < (TotalityMaxISO * 0.95))
-		then
-		
-			CurISO = CurISO * 2.0^TotalityExpStep
-		
-		else
-		
-			cur_shutter_speed = TotalityMinShutterSpeed
-			
-			CurISO = TotalityMinISO
-			
-		end
-			
-	until (get_cur_secs() >= (max_sec - MaxOffset)) -- Stop, and leave time to do the mid-eclipse earthshine
-													-- exposures.
+    if ( get_cur_secs() <= (c2_sec - C2BurstStartOffset) ) -- Have we past the burst for Baily's beads?
+    then
+        wait_until (c2_sec - (C2BurstStartOffset + 30))
+
+        print()
+        print("********************************************************")
+        print("30 seconds to C2!  Remove Filter!")
+        print("********************************************************")
+        print()
+        do_beep()
+        wait_until (c2_sec - C2BurstStartOffset)
+        take_burst (C23BurstCount, C23BurstISO, C23BurstShutterSpeed)
+
+        print()
+        print("********************************************************")
+        print("Post C2 warning!")
+        print("********************************************************")
+        print()
+        do_beep()
+    end
+
+    cur_shutter_speed = TotalityMinShutterSpeed
+    CurISO            = TotalityMinISO
+
+    repeat
+        take_shot(CurISO, cur_shutter_speed, 0, 0, 0)
+        if (CurISO < (TotalityPrefISO * 0.95))
+        then
+            CurISO = CurISO * 2.0^TotalityExpStep
+        elseif ((CurISO < (TotalityPrefISO * 1.1)) and
+                (cur_shutter_speed < (TotalityMaxShutterSpeed * 0.95)))
+        then
+            cur_shutter_speed = cur_shutter_speed * 2.0^TotalityExpStep
+        elseif (CurISO < (TotalityMaxISO * 0.95))
+        then
+            CurISO = CurISO * 2.0^TotalityExpStep
+        else
+            cur_shutter_speed = TotalityMinShutterSpeed
+            CurISO = TotalityMinISO
+        end
+    until (get_cur_secs() >= (max_sec - MaxOffset)) -- Stop, and leave time to do the mid-eclipse earthshine
+                                                    -- exposures.
 end
 
 
@@ -644,94 +571,73 @@ end
 -- an earthshine image.  These can be bracketed.
 --
 function do_max()
+    if (DoMaxExposures == 0)  -- Are we doing this?
+    then
+        return    -- Nope.
+    end
 
-	if (DoMaxExposures == 0)  -- Are we doing this?
-	then
-	
-		return 		-- Nope.
-	
-	end
-
-	for count_max_exp = NumMaxExposures , 1 , -1 do
-	
-		take_shot(MaxISO, MaxShutterSpeed, DoMaxBrackets, NumMaxBrackets, MaxBracketStep)
-		
-	end
-	
+    for count_max_exp = NumMaxExposures , 1 , -1 do
+        take_shot(MaxISO, MaxShutterSpeed, DoMaxBrackets, NumMaxBrackets, MaxBracketStep)
+    end
 end
- 
+
 
 --
--- Similar to do_c2max, but reversed.  Exposures run from longest to shortest (and then repeat), 
+-- Similar to do_c2max, but reversed.  Exposures run from longest to shortest (and then repeat),
 -- the burst starts just before C3, and there are no bonus exposures.
 --
 function do_maxc3()
+    local cur_shutter_speed = 0
+    local CurISO = 0
 
-	local cur_shutter_speed = 0
-	local CurISO = 0
+    if ( get_cur_secs() >= (c3_sec + C3BurstStartOffset) ) -- Are we past this phase already?
+    then
+        return
+    elseif ( get_cur_secs() < (c3_sec - C3BurstStartOffset) ) -- Do we have time for some totality exposures?
+    then
+        cur_shutter_speed = TotalityMaxShutterSpeed
+        CurISO = TotalityMaxISO
 
-	if ( get_cur_secs() >= (c3_sec + C3BurstStartOffset) ) -- Are we past this phase already?
-	then
-	
-		return
-		
-	elseif ( get_cur_secs() < (c3_sec - C3BurstStartOffset) ) -- Do we have time for some totality exposures?
-	then
-	
-		cur_shutter_speed = TotalityMaxShutterSpeed
-		CurISO = TotalityMaxISO
-		
-	
-		repeat
-	
-			take_shot(CurISO, cur_shutter_speed, 0, 0, 0)
-			
-			if (CurISO > (TotalityPrefISO * 1.05))
-			then
-			
-				CurISO = CurISO / 2.0^TotalityExpStep
-			
-			elseif ((CurISO > (TotalityPrefISO * 0.95)) and (cur_shutter_speed > (TotalityMinShutterSpeed * 1.05)))
-			then
-		
-				cur_shutter_speed = cur_shutter_speed / 2.0^TotalityExpStep
-		
-			elseif (CurISO > (TotalityMinISO * 1.01))
-			then
-		
-				CurISO = CurISO / 2.0^TotalityExpStep
-		
-			else
-		
-				cur_shutter_speed = TotalityMaxShutterSpeed
-				
-				CurISO = TotalityMaxISO
-			
-			end
-						
-		until (get_cur_secs() >= (c3_sec - (C3BurstStartOffset + 3)))
+        repeat
+            take_shot(CurISO, cur_shutter_speed, 0, 0, 0)
+            if (CurISO > (TotalityPrefISO * 1.05))
+            then
+                CurISO = CurISO / 2.0^TotalityExpStep
+            elseif ((CurISO > (TotalityPrefISO * 0.95)) and
+                    (cur_shutter_speed > (TotalityMinShutterSpeed * 1.05)))
+            then
+                cur_shutter_speed = cur_shutter_speed / 2.0^TotalityExpStep
+            elseif (CurISO > (TotalityMinISO * 1.01))
+            then
+                CurISO = CurISO / 2.0^TotalityExpStep
+            else
+                cur_shutter_speed = TotalityMaxShutterSpeed
+                CurISO = TotalityMaxISO
+            end
 
-		print()
-		print("********************************************************")
-		print("3 seconds to C3!  Filter warning!")
-		print("********************************************************")
-		print()
-		
-		do_beep()
-			
-	end
-	
-	wait_until (c3_sec - C3BurstStartOffset)
-	
-	take_burst (C23BurstCount, C23BurstISO, C23BurstShutterSpeed)
+        until (get_cur_secs() >= (c3_sec - (C3BurstStartOffset + 3)))
 
-	print()
-	print("********************************************************")
-	print("End of totality! Replace filter!")
-	print("********************************************************")
-	print()
-		
-	do_beep()
+        print()
+        print("********************************************************")
+        print("3 seconds to C3!  Filter warning!")
+        print("********************************************************")
+        print()
+
+        do_beep()
+
+    end
+
+    wait_until (c3_sec - C3BurstStartOffset)
+
+    take_burst (C23BurstCount, C23BurstISO, C23BurstShutterSpeed)
+
+    print()
+    print("********************************************************")
+    print("End of totality! Replace filter!")
+    print("********************************************************")
+    print()
+
+    do_beep()
 
 end
 
@@ -740,90 +646,74 @@ end
 -- The ringleader.
 --
 function main()
+    local starttime
+    local offset = 0
+    local offset_count = 0
 
-	local starttime
-	local offset = 0
-	local offset_count = 0
+    starttime = get_cur_secs()
 
-	starttime = get_cur_secs()
-	
-	TestStartTime = starttime
-	
+    TestStartTime = starttime
+
     menu.close()
     console.show()
 
-	--
-	-- The camera maintains a millisecond timer since power-on.  We can use this to
-	-- get close to the beginning of a given second.  I think.
-	--
-	event.seconds_clock = function (ignore)
-	
-		offset = offset + (dryos.ms_clock - (1000 * offset_count))
-		offset_count = offset_count + 1
-			
-	return true
-	
-end
-	print ()
-	print ()
-	print ("-------------------------------------")
-	print ("  Eclipse Magic")
-	print ("  Copyright 2017, grnbrg@grnbrg.org")
-	print ("  Released under the GNU GPL")
-	print ("-------------------------------------")
-	print ()
-	print ("Starting 10 second timing calibration....")
+    --
+    -- The camera maintains a millisecond timer since power-on.  We can use this to
+    -- get close to the beginning of a given second.  I think.
+    --
+    event.seconds_clock = function (ignore)
+        offset       = offset + (dryos.ms_clock - (1000 * offset_count))
+        offset_count = offset_count + 1
+        return true
+    end
 
-	--
-	-- There is a fair amount of jitter in the event timer.  Averaging over 10 seconds will
-	-- give us a reasonable offset.
-	--
-	task.yield(10500)
+    print ()
+    print ()
+    print ("-------------------------------------")
+    print ("  Eclipse Magic")
+    print ("  Copyright 2017, grnbrg@grnbrg.org")
+    print ("  Released under the GNU GPL")
+    print ("-------------------------------------")
+    print ()
+    print ("Starting 10 second timing calibration....")
 
-	-- Turn off the second_clock event timer.
-	event.seconds_clock = nil
-	
-	tick_offset = (math.floor(offset / offset_count) % 1000)
-	
-	print ("Done!")
-	print ()
+    --
+    -- There is a fair amount of jitter in the event timer.  Averaging over 10 seconds will
+    -- give us a reasonable offset.
+    --
+    task.yield(10500)
 
-	-- If the camera is not in manual mode, trying to set the shutter speed throws errors.
-	-- Check to make sure we are in manual mode, and refuse to run if we're not.
-	if (camera.mode == MODE.M)
-	then
-	
-		if (SetAperture == 1)
-		then
-		
-			camera.aperture.value = Aperture
-			
-		end
-	
-		do_partial ((c1_sec + PartialMarginTime), c2_sec, "Pre")
-	
-		do_c2max()
-		
-		do_max()
-	
-		do_maxc3()
-	
-		do_partial (c3_sec, (c4_sec - PartialMarginTime), "Post")
-		
-	else
-		
-		beep (5, 100)
-		
-		print("Camera must be in manual (M) mode!!")
-		print()
-		print("Press any button to exit the script.  Change the mode and re-run.")
-		
-		key.wait()
-		
-	end
-		
+    -- Turn off the second_clock event timer.
+    event.seconds_clock = nil
+
+    tick_offset = (math.floor(offset / offset_count) % 1000)
+
+    print ("Done!")
+    print ()
+
+    -- If the camera is not in manual mode, trying to set the shutter speed throws errors.
+    -- Check to make sure we are in manual mode, and refuse to run if we're not.
+    if (camera.mode == MODE.M)
+    then
+        if (SetAperture == 1)
+        then
+            camera.aperture.value = Aperture
+        end
+
+        do_partial ((c1_sec + PartialMarginTime), c2_sec, "Pre")
+        do_c2max()
+        do_max()
+        do_maxc3()
+        do_partial (c3_sec, (c4_sec - PartialMarginTime), "Post")
+    else
+        beep (5, 100)
+        print("Camera must be in manual (M) mode!!")
+        print()
+        print("Press any button to exit the script.  Change the mode and re-run.")
+        key.wait()
+    end
+
     console.hide()
-	
 end -- Done.  Hope there were no clouds.
 
 
@@ -832,56 +722,56 @@ main() -- Run the program.
 -- CHANGES
 
 -- 1.0.1
-	-- Stopped running the seconds_clock event at all times, and moved the tick_offset
-		-- calculation to the setup at the start of execution
-	-- Fixed the pretty-printing of the timer
-	-- Fixed the sign of the C23BurstStartOffset in do_maxc3
-	-- Fixed the calculation of the difference between current time and the next second
-		-- in wait_until()
-	-- Added code to turn off the console during long waits
-	-- Massaged the end-of-exposure-bracketing conditions in do_c2max() and do_maxc3()
-	
+    -- Stopped running the seconds_clock event at all times, and moved the tick_offset
+        -- calculation to the setup at the start of execution
+    -- Fixed the pretty-printing of the timer
+    -- Fixed the sign of the C23BurstStartOffset in do_maxc3
+    -- Fixed the calculation of the difference between current time and the next second
+        -- in wait_until()
+    -- Added code to turn off the console during long waits
+    -- Massaged the end-of-exposure-bracketing conditions in do_c2max() and do_maxc3()
+
 -- 1.1
-	-- Changed the partial phase exposure logic, so that instead of there being an exposure
-		-- at C1 and C2, there is an exposure at C1 and an exposure at (C2 - exposure_interval)
-		-- so that the totality images are properly centered between the requested partial phase
-		-- exposures.
-	-- Added an alarm at 30 seconds before C2 and 3 seconds before C3 to alert for any filter changes.  
-		-- There is also a beep after the C2 and C3 bursts to flag any needed changes.
-	-- Split the C23BurstStartOffset into separate variables, to allow an asymmetric burst over
-		-- each period.  (ie: 10 seconds before C2 to 3 seconds after C2)
-		
+    -- Changed the partial phase exposure logic, so that instead of there being an exposure
+        -- at C1 and C2, there is an exposure at C1 and an exposure at (C2 - exposure_interval)
+        -- so that the totality images are properly centered between the requested partial phase
+        -- exposures.
+    -- Added an alarm at 30 seconds before C2 and 3 seconds before C3 to alert for any filter changes.
+        -- There is also a beep after the C2 and C3 bursts to flag any needed changes.
+    -- Split the C23BurstStartOffset into separate variables, to allow an asymmetric burst over
+        -- each period.  (ie: 10 seconds before C2 to 3 seconds after C2)
+
 -- 1.2
-	-- Added ISO brackets to totality exposure sequence.  Totality now has a preferred ISO, 
-		-- and will shift to that ISO at the fastest or slowest shutter speeds, then use that
-		-- preferred ISO for the requested range of shutter speeds, then shift ISO to the end of
-		-- the requested range.
-	-- Option to stop LiveView before touching the shutter controls.
-	-- Removed the two long exposures at max eclipse -- probably not needed.
-	
+    -- Added ISO brackets to totality exposure sequence.  Totality now has a preferred ISO,
+        -- and will shift to that ISO at the fastest or slowest shutter speeds, then use that
+        -- preferred ISO for the requested range of shutter speeds, then shift ISO to the end of
+        -- the requested range.
+    -- Option to stop LiveView before touching the shutter controls.
+    -- Removed the two long exposures at max eclipse -- probably not needed.
+
 -- 1.2.1
-	-- Changed call to lv.stop() to a beep, and instruction to the user to turn off LV.
-		-- lv.stop() doesn't seem to work.
-	-- Added print statements to explain filter warning beeps.
-	
+    -- Changed call to lv.stop() to a beep, and instruction to the user to turn off LV.
+        -- lv.stop() doesn't seem to work.
+    -- Added print statements to explain filter warning beeps.
+
 -- 1.3.0
-	-- Changed the startup timing loop to be more accurate if the script is started close to
-	    -- a second boundary.  (The average offset of 999ms and 1ms is 1ms, not 500ms)
-	-- Corrected an error in wait_until() -- Used div, where modulus was correct, and had
-	    -- the tick_offset correction wrong.  Don't code while tired.  Thanks to
-		-- matman730 for pointing out this goof.
-	-- Improved the configuration comments around TestBeepNoShutter.  They apparently weren't
-	    -- clear as I thought.
-		
+    -- Changed the startup timing loop to be more accurate if the script is started close to
+        -- a second boundary.  (The average offset of 999ms and 1ms is 1ms, not 500ms)
+    -- Corrected an error in wait_until() -- Used div, where modulus was correct, and had
+        -- the tick_offset correction wrong.  Don't code while tired.  Thanks to
+        -- matman730 for pointing out this goof.
+    -- Improved the configuration comments around TestBeepNoShutter.  They apparently weren't
+        -- clear as I thought.
+
 -- 1.4.0  (Not released)
-		-- Attempt to implment the changing of the file prefix for the saved images.  It didn'take
-			-- work well, and I scrapped it.
-		
+        -- Attempt to implment the changing of the file prefix for the saved images.  It didn'take
+            -- work well, and I scrapped it.
+
 -- 1.5.0
-	-- Make it optional to hide the console during script running, and allow the delay before
-		-- and after the next image to be configured.
-	-- Shutter shock reduction:  Add a configurable (in milliseconds) delay before an exposure
-		-- where the shutter speed is within a (also configurable) range.
-	-- Add a mid-eclipse section.  This is a short section around the max eclipse point to optionally
-		-- try for some earthshine exposures.
-	-- Set the aperture on program start.
+    -- Make it optional to hide the console during script running, and allow the delay before
+        -- and after the next image to be configured.
+    -- Shutter shock reduction:  Add a configurable (in milliseconds) delay before an exposure
+        -- where the shutter speed is within a (also configurable) range.
+    -- Add a mid-eclipse section.  This is a short section around the max eclipse point to optionally
+        -- try for some earthshine exposures.
+    -- Set the aperture on program start.
