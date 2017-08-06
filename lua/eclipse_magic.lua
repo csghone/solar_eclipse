@@ -93,28 +93,29 @@ then -- offsets from now
     c2.sec = 0
 
     c3.hr  = 0
-    c3.min = 3
-    c3.sec = 0
+    c3.min = 1
+    c3.sec = 55
 
     c4.hr  = 0
-    c4.min = 4
+    c4.min = 3
     c4.sec = 0
 else -- actual time
-    c1.hr  = 0
-    c1.min = 0
-    c1.sec = 10
+    -- https://eclipse2017.nasa.gov/sites/default/files/interactive_map/index.html (UTC)
+    c1.hr  = 16
+    c1.min = 6
+    c1.sec = 31
 
-    c2.hr  = 0
-    c2.min = 1
-    c2.sec = 0
+    c2.hr  = 17
+    c2.min = 19
+    c2.sec = 24
 
-    c3.hr  = 0
-    c3.min = 3
-    c3.sec = 0
+    c3.hr  = 17
+    c3.min = 21
+    c3.sec = 19
 
-    c4.hr  = 0
-    c4.min = 2
-    c4.sec = 0
+    c4.hr  = 18
+    c4.min = 40
+    c4.sec = 50
 end
 --
 -- Set an aperture value.  The script assumes that the aperture stays constant throughout the
@@ -736,6 +737,7 @@ function main()
     event.seconds_clock = nil
 
     tick_offset = (math.floor(offset / offset_count) % 1000)
+    print("tick_offset", tick_offset)
 
     print ("Done!")
     print ()
