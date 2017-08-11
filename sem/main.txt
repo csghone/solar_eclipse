@@ -1,0 +1,156 @@
+# Solar Eclipse Maestro #
+#########################
+#Action,Date/Ref,Offset Sign,Time Offset,Camera,Exposure,Aperture,ISO,MLU/Burst Number,Quality,Size,Incremental,Comment
+
+FOR,(INTERVALOMETER),0,0.500,5
+TAKEPIC,C1,-,00:01:00.0,6D1,1/2000,5.6,200,0.000,RAW,None,N,Pre-C1 uneclipsed
+ENDFOR
+FOR,(INTERVALOMETER),1,0.500,5
+TAKEPIC,C4,+,00:01:00.0,6D1,1/2500,5.6,200,0.000,RAW,None,N,Post-C4 uneclipsed
+ENDFOR
+
+FOR,(INTERVALOMETER),1,0.500,5
+TAKEPIC,C1,-,00:00:00.5,6D1,1/2000,5.6,200,0.000,RAW,None,Y,First contact
+ENDFOR
+FOR,(INTERVALOMETER),0,0.500,5
+TAKEPIC,C4,+,00:00:00.5,6D1,1/2500,5.6,200,0.000,RAW,None,Y,Fourth contact
+ENDFOR
+
+FOR,(VAR),2.0,2.0,99.9
+TAKEPIC,MAGPRE (VAR),+,00:00.0,6D1,1/2500,5.6,200,0.000,RAW,None,Y,Partial C1-C2
+ENDFOR
+FOR,(VAR),2.0,2.0,99.9
+TAKEPIC,MAGPOST (VAR),+,00:00.0,6D1,1/2500,5.6,200,0.000,RAW,None,Y,Partial C3-C4
+ENDFOR
+
+PLAY,C2,-,00:10:00.1,10_Minutes.wav, , , , , , , ,'10 minutes' voice prompt
+PLAY,C2,-,00:05:00.1,5_Minutes.wav, , , , , , , ,'5 minutes' voice prompt
+PLAY,C2,-,00:02:00.1,2_Minutes.wav, , , , , , , ,'2 minutes' voice prompt
+PLAY,C2,-,00:01:00.1,60_Seconds.wav, , , , , , , ,'1 minute' voice prompt
+PLAY,C2,-,00:00:30.1,30_Seconds.wav, , , , , , , ,'30 seconds' voice prompt
+PLAY,C2,-,00:00:20.1,Filters_Off.wav, , , , , , , ,'Filters off' voice prompt
+PLAY,C2,-,00:00:10.1,10_Seconds.wav, , , , , , , ,'10 seconds' voice prompt
+PLAY,MAX,-,00:00:00.1,Max_Eclipse.wav, , , , , , , ,'Maximum eclipse' voice prompt
+PLAY,C3,+,00:00:19.9,Filters_On.wav, , , , , , , ,'Filters on' voice prompt
+
+FOR,(INTERVALOMETER),0,0.506,7
+TAKEPIC,C2,-,00:03.5,6D1,1/160,5.6,200,0.000,RAW,None,Y,First Diamond Ring
+ENDFOR
+FOR,(INTERVALOMETER),1,0.506,7
+TAKEPIC,C3,+,00:03.5,6D1,1/160,5.6,200,0.000,RAW,None,Y,Second Diamond Ring
+ENDFOR
+
+FOR,(INTERVALOMETER),0,0.500,7
+TAKEPIC,C2,-,00:01.5,6D1,1/8000,5.6,200,0.000,RAW,None,Y,C2 Baily's Beads
+ENDFOR
+FOR,(INTERVALOMETER),1,0.500,7
+TAKEPIC,C3,+,00:01.5,6D1,1/8000,5.6,200,0.000,RAW,None,Y,C3 Baily's Beads
+ENDFOR
+
+FOR,(INTERVALOMETER),1,0.500,5
+TAKEPIC,C2,+,00:00.5,6D1,1/8000,5.6,200,0.000,RAW,None,Y,C2 Chromosphere
+ENDFOR
+FOR,(INTERVALOMETER),0,0.500,5
+TAKEPIC,C3,-,00:00.5,6D1,1/8000,5.6,200,0.000,RAW,None,Y,C3 Chromosphere
+ENDFOR
+
+FOR,(INTERVALOMETER),1,0.500,5
+TAKEPIC,C2,+,00:03.0,6D1,1/5000,5.6,200,0.000,RAW,None,Y,C2 Prominences
+ENDFOR
+FOR,(INTERVALOMETER),0,0.500,5
+TAKEPIC,C3,-,00:03.0,6D1,1/5000,5.6,200,0.000,RAW,None,Y,C3 Prominences
+ENDFOR
+
+TAKEPIC,MAX,-,00:44.3,6D1,1/1250,5.6,200,0.000,RAW,None,N,Solar corona Rs = 0.1
+TAKEPIC,MAX,-,00:43.8,6D1,1/640,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+TAKEPIC,MAX,-,00:43.3,6D1,1/320,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,-,00:42.8,6D1,1/160,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,-,00:42.3,6D1,1/80,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,-,00:41.8,6D1,1/40,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,-,00:41.3,6D1,1/20,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 1.0
+TAKEPIC,MAX,-,00:40.7,6D1,1/10,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,-,00:40.1,6D1,1/5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,-,00:39.4,6D1,1/2.5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 6.0
+TAKEPIC,MAX,-,00:38.5,6D1,1/1.3,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+TAKEPIC,MAX,-,00:37.3,6D1,1.6,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+
+TAKEPIC,MAX,-,00:35.2,6D1,1/1250,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+TAKEPIC,MAX,-,00:34.7,6D1,1/640,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+TAKEPIC,MAX,-,00:34.2,6D1,1/320,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,-,00:33.7,6D1,1/160,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,-,00:33.1,6D1,1/80,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,-,00:32.6,6D1,1/40,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,-,00:32.1,6D1,1/20,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 1.0
+TAKEPIC,MAX,-,00:31.6,6D1,1/10,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,-,00:31.0,6D1,1/5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,-,00:30.3,6D1,1/2.5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 6.0
+TAKEPIC,MAX,-,00:29.4,6D1,1/1.3,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+TAKEPIC,MAX,-,00:28.1,6D1,1.6,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+
+TAKEPIC,MAX,-,00:26.0,6D1,1/1250,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+TAKEPIC,MAX,-,00:25.5,6D1,1/640,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+TAKEPIC,MAX,-,00:25.0,6D1,1/320,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,-,00:24.5,6D1,1/160,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,-,00:24.0,6D1,1/80,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,-,00:23.5,6D1,1/40,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,-,00:22.9,6D1,1/20,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 1.0
+TAKEPIC,MAX,-,00:22.4,6D1,1/10,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,-,00:21.8,6D1,1/5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,-,00:21.1,6D1,1/2.5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 6.0
+TAKEPIC,MAX,-,00:20.2,6D1,1/1.3,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+TAKEPIC,MAX,-,00:18.9,6D1,1.6,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+
+TAKEPIC,MAX,-,00:16.8,6D1,1/1250,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+TAKEPIC,MAX,-,00:16.3,6D1,1/640,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+TAKEPIC,MAX,-,00:15.8,6D1,1/320,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,-,00:15.3,6D1,1/160,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,-,00:14.8,6D1,1/80,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,-,00:14.3,6D1,1/40,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,-,00:13.8,6D1,1/20,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 1.0
+TAKEPIC,MAX,-,00:13.2,6D1,1/10,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,-,00:12.6,6D1,1/5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,-,00:11.9,6D1,1/2.5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 6.0
+TAKEPIC,MAX,-,00:11.0,6D1,1/1.3,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+TAKEPIC,MAX,-,00:09.8,6D1,1.6,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+TAKEPIC,MAX,+,00:07.5,6D1,1.6,5.6,200,0.000,RAW,None,N,Solar corona Rs = 8.0
+TAKEPIC,MAX,+,00:09.6,6D1,1/1.3,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+TAKEPIC,MAX,+,00:10.9,6D1,1/2.5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 6.0
+TAKEPIC,MAX,+,00:11.8,6D1,1/5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,+,00:12.5,6D1,1/10,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,+,00:13.1,6D1,1/20,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 1.0
+TAKEPIC,MAX,+,00:13.6,6D1,1/40,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,+,00:14.1,6D1,1/80,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,+,00:14.7,6D1,1/160,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,+,00:15.2,6D1,1/320,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,+,00:15.7,6D1,1/640,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+TAKEPIC,MAX,+,00:16.2,6D1,1/1250,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+
+TAKEPIC,MAX,+,00:16.7,6D1,1.6,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+TAKEPIC,MAX,+,00:18.8,6D1,1/1.3,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+TAKEPIC,MAX,+,00:20.0,6D1,1/2.5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 6.0
+TAKEPIC,MAX,+,00:20.9,6D1,1/5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,+,00:21.6,6D1,1/10,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,+,00:22.2,6D1,1/20,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 1.0
+TAKEPIC,MAX,+,00:22.8,6D1,1/40,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,+,00:23.3,6D1,1/80,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,+,00:23.8,6D1,1/160,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,+,00:24.3,6D1,1/320,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,+,00:24.8,6D1,1/640,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+TAKEPIC,MAX,+,00:25.3,6D1,1/1250,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+
+TAKEPIC,MAX,+,00:25.8,6D1,1.6,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+TAKEPIC,MAX,+,00:27.9,6D1,1/1.3,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 8.0
+TAKEPIC,MAX,+,00:29.2,6D1,1/2.5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 6.0
+TAKEPIC,MAX,+,00:30.1,6D1,1/5,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,+,00:30.8,6D1,1/10,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 2.0
+TAKEPIC,MAX,+,00:31.4,6D1,1/20,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 1.0
+TAKEPIC,MAX,+,00:32.0,6D1,1/40,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,+,00:32.5,6D1,1/80,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.5
+TAKEPIC,MAX,+,00:33.0,6D1,1/160,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,+,00:33.5,6D1,1/320,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.2
+TAKEPIC,MAX,+,00:34.0,6D1,1/640,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+TAKEPIC,MAX,+,00:34.5,6D1,1/1250,5.6,200,0.000,RAW,None,Y,Solar corona Rs = 0.1
+
+FOR,(INTERVALOMETER),1,3.000,5
+TAKEPIC,MAX,-,00:07.5,6D1,2.5,5.6,200,0.000,RAW,None,N,Earthshine
+ENDFOR
