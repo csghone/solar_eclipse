@@ -74,49 +74,40 @@ c4 = {}
 --  The intent was that (for testing) you could set C1 to 00:00:30 or so, and the other contacts to
 --  similar offsets, and not worry about messing with the clock on the camera.  (This may not have
 --  been the best choice on my part!  :) )
-TestBeepNoShutter = 1
-RunOnPC = 1
+TestBeepNoShutter = 0
+RunOnPC = 0
+RunNow = 0
 
 --
 -- Set the 4 contact times here.  Time zone is irrelevant, as long as your camera and these
 -- times are the same.  Make sure the times are correct for your location, and that your camera
 -- is accurately set to GPS time.
 --
-if (TestBeepNoShutter == 1)
-then -- offsets from now
-    c1.hr  = 0
-    c1.min = 0
+
+-- https://eclipse2017.nasa.gov/sites/default/files/interactive_map/index.html (UTC)
+c1.hr  = 16
+c1.min = 6
+c1.sec = 31
+
+if (RunNow == 1)
+then
+    c1.hr  = 17
+    c1.min = 18
     c1.sec = 0
-
-    c2.hr  = 0
-    c2.min = 1
-    c2.sec = 0
-
-    c3.hr  = 0
-    c3.min = 1
-    c3.sec = 55
-
-    c4.hr  = 0
-    c4.min = 3
-    c4.sec = 0
-else -- actual time
-    -- https://eclipse2017.nasa.gov/sites/default/files/interactive_map/index.html (UTC)
-    c1.hr  = 16
-    c1.min = 6
-    c1.sec = 31
-
-    c2.hr  = 17
-    c2.min = 19
-    c2.sec = 24
-
-    c3.hr  = 17
-    c3.min = 21
-    c3.sec = 19
-
-    c4.hr  = 18
-    c4.min = 40
-    c4.sec = 50
 end
+
+c2.hr  = 17
+c2.min = 19
+c2.sec = 24
+
+c3.hr  = 17
+c3.min = 21
+c3.sec = 18
+
+c4.hr  = 18
+c4.min = 40
+c4.sec = 50
+
 --
 -- Set an aperture value.  The script assumes that the aperture stays constant throughout the
 -- eclipe.  The camera will (try to) set this aperture (f-number) at the beginning of the script.
@@ -262,6 +253,12 @@ TestStartTime = 0
 
 if (RunOnPC == 1)
 then
+else
+    os = {}
+end
+
+if (RunOnPC == 1)
+then
     clock_rate = os.clock()
     start = os.time()
     while (os.time() < start + 5) do
@@ -315,11 +312,11 @@ function get_cur_secs ()
         cur_time = dryos.date
     end
     local cur_secs = (cur_time.hour * 3600 + cur_time.min * 60 + cur_time.sec)
-    if ( TestBeepNoShutter == 1 )
-    then
-        cur_secs = (cur_secs - TestStartTime) -- If we're testing, start the clock at
-                                              -- now, not actual time.
-    end
+    --if ( TestBeepNoShutter == 1 )
+    --then
+        --cur_secs = (cur_secs - TestStartTime) -- If we're testing, start the clock at
+                                              ---- now, not actual time.
+    --end
     return cur_secs
 end
 
@@ -703,9 +700,28 @@ function main()
     starttime = get_cur_secs()
 
     TestStartTime = starttime
+    print("starttime", starttime)
 
     menu.close()
     console.show()
+
+    local temp = c1_sec
+
+    if (RunNow == 1)
+    then
+        c1_sec = c1_sec + TestStartTime
+        c2_sec = c2_sec + TestStartTime
+        c3_sec = c3_sec + TestStartTime
+        c4_sec = c4_sec + TestStartTime
+
+        c1_sec = c1_sec - temp
+        c2_sec = c2_sec - temp
+        c3_sec = c3_sec - temp
+        c4_sec = c4_sec - temp
+
+        max_sec = c2_sec + ((c3_sec - c2_sec) / 2)
+    end
+
 
     --
     -- The camera maintains a millisecond timer since power-on.  We can use this to
@@ -741,6 +757,13 @@ function main()
 
     print ("Done!")
     print ()
+
+    print("Current:", pretty_time(get_cur_secs()))
+    print("C1     :", pretty_time(c1_sec))
+    print("C2     :", pretty_time(c2_sec))
+    print("MAX    :", pretty_time(max_sec))
+    print("C3     :", pretty_time(c3_sec))
+    print("C4     :", pretty_time(c4_sec))
 
     -- If the camera is not in manual mode, trying to set the shutter speed throws errors.
     -- Check to make sure we are in manual mode, and refuse to run if we're not.
