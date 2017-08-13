@@ -722,17 +722,6 @@ function main()
         max_sec = c2_sec + ((c3_sec - c2_sec) / 2)
     end
 
-
-    --
-    -- The camera maintains a millisecond timer since power-on.  We can use this to
-    -- get close to the beginning of a given second.  I think.
-    --
-    event.seconds_clock = function (ignore)
-        offset       = offset + (dryos.ms_clock - (1000 * offset_count))
-        offset_count = offset_count + 1
-        return true
-    end
-
     print ()
     print ()
     print ("-------------------------------------")
@@ -743,17 +732,34 @@ function main()
     print ()
     print ("Starting 10 second timing calibration....")
 
+
+    --------------------------------------------------------------------------
+    offset = 0
+    offset_count = 0
+    --
+    -- The camera maintains a millisecond timer since power-on.  We can use this to
+    -- get close to the beginning of a given second.  I think.
+    --
+    event.seconds_clock = function (ignore)
+        offset       = offset + (dryos.ms_clock - (1000 * offset_count))
+        offset_count = offset_count + 1
+        return true
+    end
+
     --
     -- There is a fair amount of jitter in the event timer.  Averaging over 10 seconds will
     -- give us a reasonable offset.
+    -- Seems to be stable even if 1000 is used - CSG
     --
-    task.yield(10500)
+    task.yield(1500)
 
     -- Turn off the second_clock event timer.
     event.seconds_clock = nil
 
     tick_offset = (math.floor(offset / offset_count) % 1000)
-    print("tick_offset", tick_offset)
+    print("tick_offset", tick_offset, offset, offset_count)
+    --------------------------------------------------------------------------
+
 
     print ("Done!")
     print ()
