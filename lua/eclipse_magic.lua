@@ -52,31 +52,9 @@ c3 = {}
 c4 = {}
 
 
---
---  If you are testing, set this to 1, and the shutter won't be used.
---  Set it to 0 for the real event.
---
---  This changes how the contact times are interpreted!  If TestBeepNoShutter
---  is set to 1, then the contact times are time elapsed after the script is started.
---  it is set to 0, then the contact times reference the realtime clock of the camera.
---
---  For example:
---
---  If C1 is set to 10:30:00 (ie: 10:30:00 am), and the current time on the camera is set
---  to 08:00:00 (ie: 8:00:00 am), then
---
---  If TestBeepNoShutter is set to 1, then the script will start demonstrating eclipse exposures
---  in ten hours and thirty minutes.
---
---  If TestBeepNoShutter is set to 0, the script will start taking actual exposures in two
---  hours and thirty minutes (ie: at 10:30:00).
---
---  The intent was that (for testing) you could set C1 to 00:00:30 or so, and the other contacts to
---  similar offsets, and not worry about messing with the clock on the camera.  (This may not have
---  been the best choice on my part!  :) )
-TestBeepNoShutter = 0
-RunOnPC = 0
-RunNow = 0
+TestBeepNoShutter = 0 -- Test on PC or camera without calling camera.burst()/shoot()
+RunOnPC = 0 -- Run on PC using lua5.3
+RunNow = 0 -- Run on Camera or PC immediately. This is done by subtracting (c1 - current time) from c1/2/3/4.
 
 --
 -- Set the 4 contact times here.  Time zone is irrelevant, as long as your camera and these
@@ -185,12 +163,14 @@ PartialBktCount      = 1  -- How many brackets on each side of the neutral expos
 -- the contact time.  Note that, between the setting of the camera clock and the jitter in this
 -- script, there will be some error in the timing.  +/- half a second or more is possible.
 --
-C23BurstCount        = 14 -- Note that most Canon DSLRs can't take more than 13-14 RAW images
-                          -- in a burst before the buffer is full, and they slow to ~1 image/second.
+C23BurstCount        = 6 -- Note that most Canon DSLRs can't take more than 13-14 RAW images
+                         -- in a burst before the buffer is full, and they slow to ~1 image/second.
+                         -- 600D can take ~7, keeping one less to allow next shot to be taken
 C2BurstStartOffset   = 3
-C3BurstStartOffset   = 2
+C3BurstStartOffset   = 3
 C23BurstISO          = 100
-C23BurstShutterSpeed = (1/500)
+C23BurstShutterSpeedDR = (1/250)
+C23BurstShutterSpeedBB = (1/4000)
 
 
 --
@@ -202,9 +182,9 @@ C23BurstShutterSpeed = (1/500)
 -- PrefISO to MaxISO.
 --
 TotalityMinISO          = 100
-TotalityMaxISO          = 1600
+TotalityMaxISO          = 800
 TotalityPrefISO         = 400
-TotalityMinShutterSpeed = (1/8000) -- (MinShutterSpeed is the *fastest* speed to use.)
+TotalityMinShutterSpeed = (1/2000) -- (MinShutterSpeed is the *fastest* speed to use.)
 TotalityMaxShutterSpeed = 1.0      -- 1 sec (MaxShutterSpeed is the *slowest*, longest speed used.)
 TotalityExpStep         = 1
 
@@ -223,7 +203,7 @@ NumMaxExposures = 1
 DoMaxBrackets   = 1    -- Brackets?
 NumMaxBrackets  = 1
 MaxBracketStep  = 1
-MaxISO          = 3200
+MaxISO          = 400
 MaxShutterSpeed = 2.0
 
 
@@ -580,7 +560,9 @@ function do_c2max()
         print()
         do_beep()
         wait_until (c2_sec - C2BurstStartOffset)
-        take_burst (C23BurstCount, C23BurstISO, C23BurstShutterSpeed)
+        take_burst (C23BurstCount, C23BurstISO, C23BurstShutterSpeedDR)
+        task.yield(200)
+        take_burst (C23BurstCount, C23BurstISO, C23BurstShutterSpeedBB)
 
         print()
         print("********************************************************")
@@ -677,7 +659,9 @@ function do_maxc3()
 
     wait_until (c3_sec - C3BurstStartOffset)
 
-    take_burst (C23BurstCount, C23BurstISO, C23BurstShutterSpeed)
+    take_burst (C23BurstCount, C23BurstISO, C23BurstShutterSpeedBB)
+    task.yield(200)
+    take_burst (C23BurstCount, C23BurstISO, C23BurstShutterSpeedDR)
 
     print()
     print("********************************************************")
