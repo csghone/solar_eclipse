@@ -63,28 +63,28 @@ RunNow = 0 -- Run on Camera or PC immediately. This is done by subtracting (c1 -
 --
 
 -- https://eclipse2017.nasa.gov/sites/default/files/interactive_map/index.html (UTC)
-c1.hr  = 16
+c1.hr  = 9
 c1.min = 6
 c1.sec = 31
 
 if (RunNow == 1)
 then
-    c1.hr  = 17
+    c1.hr  = 10
     c1.min = 18
     c1.sec = 0
 end
 
-c2.hr  = 17
+c2.hr  = 10
 c2.min = 19
-c2.sec = 24
+c2.sec = 23
 
-c3.hr  = 17
+c3.hr  = 10
 c3.min = 21
-c3.sec = 18
+c3.sec = 19
 
-c4.hr  = 18
+c4.hr  = 11
 c4.min = 40
-c4.sec = 50
+c4.sec = 52
 
 --
 -- Set an aperture value.  The script assumes that the aperture stays constant throughout the
@@ -93,7 +93,7 @@ c4.sec = 50
 -- If the script and camera are being used with a fixed aperture lens (or telescope), then
 -- set the "SetAperture" to 0.
 SetAperture = 1
-Aperture    = 5.0
+Aperture    = 7.0
 
 --
 -- If you shoot with LiveView active, you will reduce the amount of mirror slap, giving
@@ -146,7 +146,7 @@ ShutterShockDelayMS   = 300        -- Value is in milliseconds!
 --
 -- Partial phase settings.
 --
-PartialISO           = 100
+PartialISO           = 200
 PartialShutterSpeed  = (1/2000)
 PartialMarginTime    = 15 -- Number of seconds after C1 or C3 and before C2 or C4 to start exposures
 PartialExposureCount = 4  -- Number of partial phase exposures before and after totality
@@ -163,11 +163,11 @@ PartialBktCount      = 1  -- How many brackets on each side of the neutral expos
 -- the contact time.  Note that, between the setting of the camera clock and the jitter in this
 -- script, there will be some error in the timing.  +/- half a second or more is possible.
 --
-C23BurstCount        = 6 -- Note that most Canon DSLRs can't take more than 13-14 RAW images
+C23BurstCount        = 4 -- Note that most Canon DSLRs can't take more than 13-14 RAW images
                          -- in a burst before the buffer is full, and they slow to ~1 image/second.
-                         -- 600D can take ~7, keeping one less to allow next shot to be taken
-C2BurstStartOffset   = 3
-C3BurstStartOffset   = 3
+                         -- 600D can take ~7-8, keeping it 4 to allow two burst of 4 each
+C2BurstStartOffset   = 2
+C3BurstStartOffset   = 1
 C23BurstISO          = 100
 C23BurstShutterSpeedDR = (1/250)
 C23BurstShutterSpeedBB = (1/4000)
@@ -181,7 +181,7 @@ C23BurstShutterSpeedBB = (1/4000)
 -- will also be exposures at MinShutterSpeed from MinISO to PrefISO, and MaxShutterSpeed from
 -- PrefISO to MaxISO.
 --
-TotalityMinISO          = 100
+TotalityMinISO          = 200
 TotalityMaxISO          = 800
 TotalityPrefISO         = 400
 TotalityMinShutterSpeed = (1/2000) -- (MinShutterSpeed is the *fastest* speed to use.)
@@ -203,8 +203,8 @@ NumMaxExposures = 1
 DoMaxBrackets   = 1    -- Brackets?
 NumMaxBrackets  = 1
 MaxBracketStep  = 1
-MaxISO          = 400
-MaxShutterSpeed = 2.0
+MaxISO          = 800
+MaxShutterSpeed = 1.0
 
 
 ---------------------------------------------------------------------------------------------------------
@@ -561,7 +561,7 @@ function do_c2max()
         do_beep()
         wait_until (c2_sec - C2BurstStartOffset)
         take_burst (C23BurstCount, C23BurstISO, C23BurstShutterSpeedDR)
-        task.yield(200)
+        task.yield(100)
         take_burst (C23BurstCount, C23BurstISO, C23BurstShutterSpeedBB)
 
         print()
@@ -744,7 +744,6 @@ function main()
     print("tick_offset", tick_offset, offset, offset_count)
     --------------------------------------------------------------------------
 
-
     print ("Done!")
     print ()
 
@@ -764,11 +763,20 @@ function main()
             camera.aperture.value = Aperture
         end
 
-        do_partial ((c1_sec + PartialMarginTime), c2_sec, "Pre")
+        wait_until (c2_sec - (C2BurstStartOffset + 120))
+        print("120 seconds to C2!")
+        do_beep()
+        wait_until (c2_sec - (C2BurstStartOffset + 90))
+        print("90 seconds to C2!")
+        do_beep()
+        wait_until (c2_sec - (C2BurstStartOffset + 60))
+        print("60 seconds to C2!")
+        do_beep()
+        -- do_partial ((c1_sec + PartialMarginTime), c2_sec, "Pre")
         do_c2max()
         do_max()
         do_maxc3()
-        do_partial (c3_sec, (c4_sec - PartialMarginTime), "Post")
+        -- do_partial (c3_sec, (c4_sec - PartialMarginTime), "Post")
     else
         beep (5, 100)
         print("Camera must be in manual (M) mode!!")
